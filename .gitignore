@@ -1,24 +1,38 @@
-# Logs
-logs
-*.log
+# Зависимости (самая тяжелая папка, её качают через npm install)
+node_modules/
+/jspm_packages/
+
+# Сборка (результат работы npm run build)
+dist/
+build/
+.snyk/
+
+# Логи (файлы ошибок, которые плодит npm при сбоях)
 npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
 pnpm-debug.log*
 lerna-debug.log*
 
-node_modules
-dist
-dist-ssr
-*.local
+# Секреты и ключи окружения (ВАЖНО: чтобы не утекли пароли и ключи API)
+.env
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+*.env
 
-# Editor directories and files
-.vscode/*
-!.vscode/extensions.json
-.idea
-.DS_Store
+# Конфиги редакторов кода и операционных систем
+.vscode/
+.idea/
 *.suo
 *.ntvs*
 *.njsproj
 *.sln
 *.sw?
+.DS_Store
+Thumbs.db
+
+# Тесты и отчеты покрытия
+/coverage/
+.nyc_output/
