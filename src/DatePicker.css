@@ -47,6 +47,7 @@
 
 .date-picker-modal {
   width: 100%;
+  max-width: 300px;
   box-sizing: border-box;
   position: absolute;
   top: 105%;
@@ -92,45 +93,6 @@
   text-align: center;
 }
 
-.weekday-cell {
-  font-size: 12px;
-  font-weight: bold;
-  color: #888;
-  padding: 5px 0;
-}
-
-.day-cell {
-  font-size: 14px;
-  cursor: pointer;
-  border-radius: 4px;
-  transition: background 0.1s ease;
-  color: #333;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  height: 28px;
-}
-
-.day-cell:hover:not(.empty) {
-  background-color: #f0f0f0;
-}
-
-.day-cell.empty {
-  cursor: default;
-  background: transparent;
-}
-
-.day-cell.today-cell {
-  background-color: #e6f7ff;
-  color: #007bff;
-  font-weight: bold;
-  border-radius: 4px;
-}
-
-.day-cell.today-cell:hover {
-  background-color: #bae7ff;
-}
-
 .nav-btn {
   -webkit-appearance: none;
   -moz-appearance: none;
@@ -160,16 +122,4 @@
 
 .nav-btn:active {
   transform: scale(0.95);
-}
-
-.day-cell.selected-cell {
-  background-color: #007bff;
-  color: white;
-  font-weight: bold;
-  border-radius: 4px;
-}
-
-.day-cell.selected-cell:hover {
-  background-color: #0056b3;
-  color: white;
 }
