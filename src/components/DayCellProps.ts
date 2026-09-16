@@ -2,9 +2,10 @@ import type { calendarDaysType } from "../types/calendarDaysType";
 
 interface DayCellProps {
   item: calendarDaysType;
-  isToday: boolean;
-  isSelected: boolean;
-  onClick: () => void;
+  month: number;
+  year: number;
+  selectedDate: string;
+  onDayClick: (day: number) => void;
 }
 
 export type { DayCellProps };

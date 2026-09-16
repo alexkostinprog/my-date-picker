@@ -1,6 +1,10 @@
 import type { calendarDaysType } from "../types/calendarDaysType";
 
-export const getCalendarDays = (year: number, month: number): calendarDaysType[] => {
+export const getCalendarDays = (
+  year: number,
+  month: number,
+  showAdjacentMonths: boolean,
+): calendarDaysType[] => {
   const daysInMonth = new Date(year, month + 1, 0).getDate();
   const firstDayIndex = new Date(year, month, 1).getDay();
   const shiftIndex = firstDayIndex === 0 ? 6 : firstDayIndex - 1;
@@ -11,8 +15,8 @@ export const getCalendarDays = (year: number, month: number): calendarDaysType[]
   // Дни предыдущего месяца
   for (let i = shiftIndex; i > 0; i--) {
     calendarDays.push({
-      day: daysInPrevMonth - i + 1,
-      type: "prev",
+      day: showAdjacentMonths ? daysInPrevMonth - i + 1 : null,
+      isCurrentMonth: false,
     });
   }
 
@@ -20,7 +24,7 @@ export const getCalendarDays = (year: number, month: number): calendarDaysType[]
   for (let day = 1; day <= daysInMonth; day++) {
     calendarDays.push({
       day,
-      type: "current",
+      isCurrentMonth: true,
     });
   }
 
@@ -30,30 +34,29 @@ export const getCalendarDays = (year: number, month: number): calendarDaysType[]
 
   for (let day = 1; day <= remainingCells; day++) {
     calendarDays.push({
-      day,
-      type: "next",
+      day: showAdjacentMonths ? day : null,
+      isCurrentMonth: false,
     });
   }
 
   return calendarDays;
 };
 
-export const formatDateString = (day: number, month: number, year: number): string => {
+export const formatDateString = (day: number | null, month: number, year: number): string => {
   const displayMonth = String(month + 1).padStart(2, "0");
   const displayDay = String(day).padStart(2, "0");
   return `${displayDay}.${displayMonth}.${year}`;
 };
 
 export const checkIsToday = (
-  day: number,
-  type: string,
+  dayObj: calendarDaysType,
   currentMonth: number,
   currentYear: number,
 ): boolean => {
-  if (type !== "current") return false;
   const today = new Date();
   return (
-    day === today.getDate() &&
+    dayObj.isCurrentMonth &&
+    dayObj.day === today.getDate() &&
     currentMonth === today.getMonth() &&
     currentYear === today.getFullYear()
   );

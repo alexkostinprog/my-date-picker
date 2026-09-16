@@ -1,7 +1,8 @@
+import { memo } from "react";
 import { weekDays } from "../static/weekDays";
 import s from "./WeekDaysTr.module.scss";
 
-export default function WeekDaysTr() {
+const WeekDaysTr = memo(() => {
   return (
     <>
       {weekDays.map((wd) => (
@@ -11,4 +12,6 @@ export default function WeekDaysTr() {
       ))}
     </>
   );
-}
+});
+
+export default WeekDaysTr;

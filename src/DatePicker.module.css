@@ -1,35 +1,36 @@
-.date-picker-container {
+.datePickerContainer {
   position: relative;
   display: inline-block;
   font-family: Arial, sans-serif;
   min-width: 180px;
 }
 
-.input-wrapper {
+.inputWrapper {
   position: relative;
   display: flex;
   align-items: center;
   width: 100%;
 }
 
-.date-picker-input {
+.datePickerInput {
   box-sizing: border-box;
   width: 100%;
-  padding: 10px 40px 10px 15px;
+  padding: 14px 40px 10px 15px;
   font-size: 16px;
   border: 1px solid #ccc;
   border-radius: 4px;
   cursor: pointer;
   outline: none;
+  background-color: transparent;
 }
 
-.date-picker-input:focus,
-.date-picker-input.active {
+.datePickerInput:focus,
+.datePickerInput.active {
   border-color: #007bff;
   box-shadow: 0 0 0 2px rgba(0, 123, 255, 0.1);
 }
 
-.calendar-icon {
+.calendarIcon {
   position: absolute;
   right: 12px;
   cursor: pointer;
@@ -41,11 +42,11 @@
   transition: transform 0.1s ease;
 }
 
-.calendar-icon:hover {
+.calendarIcon:hover {
   transform: scale(1.1);
 }
 
-.date-picker-modal {
+.datePickerModal {
   width: 100%;
   max-width: 300px;
   box-sizing: border-box;
@@ -60,7 +61,7 @@
   padding: 8px 15px;
 }
 
-.calendar-header {
+.calendarHeader {
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -71,12 +72,12 @@
   margin-bottom: 8px;
 }
 
-.month-title {
+.monthTitle {
   font-size: 15px;
   color: #333;
 }
 
-.date-picker-overlay {
+.datePickerOverlay {
   position: fixed;
   top: 0;
   left: 0;
@@ -86,14 +87,14 @@
   background: transparent;
 }
 
-.calendar-grid {
+.calendarGrid {
   display: grid;
   grid-template-columns: repeat(7, 1fr);
   gap: 5px;
   text-align: center;
 }
 
-.nav-btn {
+.navBtn {
   -webkit-appearance: none;
   -moz-appearance: none;
   appearance: none;
@@ -115,11 +116,45 @@
   outline: none;
 }
 
-.nav-btn:hover {
+.navBtn:hover {
   background-color: #007bff;
   color: white;
 }
 
-.nav-btn:active {
+.navBtn:active {
   transform: scale(0.95);
+}
+
+.floatingLabel {
+  position: absolute;
+  left: 12px;
+  top: 50%;
+  transform: translateY(-50%);
+  transition: all 0.2s ease;
+  color: #999;
+  font-size: 16px;
+  pointer-events: none; /* Чтобы клик сквозь него падал на инпут */
+  transition: all 0.2s ease; /* Плавный взлет и уменьшение */
+  background-color: transparent;
+  padding: 1px 4px;
+  border-radius: 2px;
+  line-height: 1;
+
+  &.active,
+  &.hasValue {
+    top: 0;
+    transform: translateY(-50%);
+    font-size: 14px;
+    background-color: var(--bg);
+    color: #007bff;
+    padding: 1px 6px;
+  }
+
+  &.active {
+    color: #007bff;
+  }
+
+  &.hasValue:not(.active) {
+    color: #666;
+  }
 }

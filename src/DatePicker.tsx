@@ -1,14 +1,13 @@
 import { useState } from "react";
 import { clsx } from "clsx";
-import "./DatePicker.css";
+import s from "./DatePicker.module.css";
 import type { DatePickerProps } from "./types/DatePickerProps";
 import DayCell from "./components/DayCell";
-import type { calendarDaysType } from "./types/calendarDaysType";
 import WeekDaysTr from "./components/WeekDaysTr";
-import { getCalendarDays, formatDateString, checkIsToday } from "./utils/dateUtils";
+import { getCalendarDays } from "./utils/dateUtils";
 
 export default function DatePicker(props: DatePickerProps) {
-  const { width, idInput } = props;
+  const { width, idInput, showAdjacentMonths = true, label } = props;
 
   const computedWidth = typeof width === "number" ? `${width}px` : width;
 
@@ -26,7 +25,7 @@ export default function DatePicker(props: DatePickerProps) {
 
   const monthNow = currentMonthYear.charAt(0).toUpperCase() + currentMonthYear.slice(1);
 
-  const calendarDays = getCalendarDays(year, month);
+  const calendarDays = getCalendarDays(year, month, showAdjacentMonths);
 
   const handlePrevMonth = (e: React.MouseEvent) => {
     e.stopPropagation();
@@ -38,66 +37,69 @@ export default function DatePicker(props: DatePickerProps) {
     setCurrentDate(new Date(year, month + 1, 1));
   };
 
-  const isToday = (dayObj: calendarDaysType) => {
-    return checkIsToday(dayObj.day, dayObj.type, month, year);
+  const handleDayClick = (day: number) => {
+    const displayMonth = String(month + 1).padStart(2, "0");
+    const displayDay = String(day).padStart(2, "0");
+    const formattedDate = `${displayDay}.${displayMonth}.${year}`;
+
+    setSelectedDate(formattedDate);
+    // setIsOpen(false);
   };
 
-  const isSelected = (dayObj: calendarDaysType) => {
-    if (dayObj.type !== "current") return false;
-    return formatDateString(dayObj.day, month, year) === selectedDate;
-  };
-
-  const handleDayClick = (dayObj: calendarDaysType) => {
-    if (dayObj.type !== "current") return;
-    setSelectedDate(formatDateString(dayObj.day, month, year));
-    setIsOpen(false);
-  };
+  const isFilled = selectedDate.length > 0;
 
   return (
-    <div className="date-picker-container" style={{ width: computedWidth }}>
-      <div className="input-wrapper" onClick={() => setIsOpen(!isOpen)}>
+    <div className={s.datePickerContainer} style={{ width: computedWidth }}>
+      <div className={s.inputWrapper} onClick={() => setIsOpen(!isOpen)}>
         <input
-          className={clsx("date-picker-input", { active: isOpen })}
+          className={clsx(s.datePickerInput, { active: isOpen, hasValue: isFilled })}
           type="text"
-          placeholder="Выберите дату"
+          placeholder=""
           value={selectedDate}
           readOnly
           id={idInput}
         />
-        <span className="calendar-icon">📅</span>
+
+        {label && (
+          <label
+            htmlFor={idInput}
+            className={clsx(s.floatingLabel, {
+              [s.active]: isOpen,
+              [s.hasValue]: isFilled,
+            })}
+          >
+            {label}
+          </label>
+        )}
+        <span className={s.calendarIcon}>📅</span>
       </div>
 
       {isOpen && (
         <>
-          <div
-            className="date-picker-overlay"
-            onMouseDown={(e) => {
-              e.stopPropagation();
-              setIsOpen(false);
-            }}
-          />
+          <div className={s.datePickerOverlay} onClick={() => setIsOpen(false)} />
 
-          <div className="date-picker-modal">
-            <div className="calendar-header">
-              <button type="button" className="nav-btn" onClick={handlePrevMonth}>
+          <div className={s.datePickerModal}>
+            <div className={s.calendarHeader}>
+              <button type="button" className={s.navBtn} onClick={handlePrevMonth}>
                 ◀
               </button>
-              <span className="month-title">{monthNow}</span>
-              <button type="button" className="nav-btn" onClick={handleNextMonth}>
+              <span className={s.monthTitle}>{monthNow}</span>
+              <button type="button" className={s.navBtn} onClick={handleNextMonth}>
                 ▶
               </button>
             </div>
 
-            <div className="calendar-grid">
+            <div className={s.calendarGrid}>
               <WeekDaysTr />
 
               {calendarDays.map((item, index) => (
                 <DayCell
                   key={index}
                   item={item}
-                  isToday={isToday(item)}
-                  isSelected={isSelected(item)}
-                  onClick={() => handleDayClick(item)}
+                  month={month}
+                  year={year}
+                  selectedDate={selectedDate}
+                  onDayClick={handleDayClick}
                 />
               ))}
             </div>

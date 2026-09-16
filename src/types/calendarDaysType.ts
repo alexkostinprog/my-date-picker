@@ -1,6 +1,6 @@
 interface calendarDaysType {
-  day: number;
-  type: string;
+  day: number | null;
+  isCurrentMonth: boolean;
 }
 
 export type { calendarDaysType };
