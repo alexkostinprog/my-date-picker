@@ -15,6 +15,11 @@
   cursor: pointer;
   outline: none;
   background-color: transparent;
+  font-family: SFMono-Regular, Consolas, "Liberation Mono", Menlo, monospace;
+  font-size: 16px;
+  font-weight: 500;
+  position: relative;
+  z-index: 2;
 }
 
 .datePickerInput:focus,
@@ -46,6 +51,7 @@
     background-color: var(--bg);
     color: #007bff;
     padding: 1px 6px;
+    z-index: 3;
   }
 
   &.active {
@@ -59,16 +65,51 @@
 
 .calendarIcon {
   position: absolute;
-  right: 12px;
+  right: 14px;
   cursor: pointer;
   user-select: none;
   font-size: 16px;
   display: flex;
   align-items: center;
   justify-content: center;
-  transition: transform 0.1s ease;
+  transition: all 0.25s ease;
+  z-index: 3;
 }
 
 .calendarIcon:hover {
+  transform: scale(1.1);
+}
+
+.calendarIconShifted {
+  right: 48px;
+}
+
+.inputMaskHint {
+  position: absolute;
+  left: 15px;
+  top: 15px;
+  font-family: SFMono-Regular, Consolas, "Liberation Mono", Menlo, monospace;
+  font-size: 16px;
+  font-weight: 500;
+  line-height: 1.15;
+  color: rgba(255, 255, 255, 0.15);
+  pointer-events: none;
+  z-index: 1;
+}
+
+.clearButton {
+  position: absolute;
+  right: 6px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: none;
+  border: none;
+  cursor: pointer;
+  transition: all 0.25s ease;
+  z-index: 3;
+}
+
+.clearButton:hover {
   transform: scale(1.1);
 }

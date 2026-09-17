@@ -1,5 +1,4 @@
 import { useCallback, useState } from "react";
-import { clsx } from "clsx";
 import s from "./DatePicker.module.css";
 import type { DatePickerProps } from "./types/DatePickerProps";
 import DayCell from "./components/DayCell";
@@ -9,7 +8,7 @@ import DatePickerInput from "./components/DatePickerInput";
 import CalendarHeader from "./components/CalendarHeader";
 
 export default function DatePicker(props: DatePickerProps) {
-  const { width, idInput, showAdjacentMonths = true, label } = props;
+  const { width, idInput, showAdjacentMonths = true, label, separator = ".", hasClear } = props;
 
   const computedWidth = typeof width === "number" ? `${width}px` : width;
 
@@ -50,7 +49,7 @@ export default function DatePicker(props: DatePickerProps) {
   const handleDayClick = (day: number) => {
     const displayMonth = String(month + 1).padStart(2, "0");
     const displayDay = String(day).padStart(2, "0");
-    const formattedDate = `${displayDay}.${displayMonth}.${year}`;
+    const formattedDate = `${displayDay}${separator}${displayMonth}${separator}${year}`;
 
     setSelectedDate(formattedDate);
     // setIsOpen(false);
@@ -60,18 +59,23 @@ export default function DatePicker(props: DatePickerProps) {
     const rawValue = e.target.value;
 
     // 1. Применяем маску (пользователь пишет "1509", маска сама делает "15.09")
-    const maskedValue = maskAndCleanDateInput(rawValue);
+    const maskedValue = maskAndCleanDateInput(rawValue, separator);
 
     // 2. Всегда обновляем текст в инпуте, чтобы пользователь видел, что он пишет
     setSelectedDate(maskedValue);
 
     // 3. Если дата дописана до конца и она валидна — синхронизируем сетку календаря!
-    if (isValidDate(maskedValue)) {
-      const [, monthStr, yearStr] = maskedValue.split(".").map(Number);
+    if (isValidDate(maskedValue, separator)) {
+      const [, monthStr, yearStr] = maskedValue.split(separator).map(Number);
 
       // Перелистываем календарь на этот месяц и год, ставя фокус на 1 число
       setCurrentDate(new Date(yearStr, monthStr - 1, 1));
     }
+  };
+
+  const handleClear = () => {
+    setSelectedDate(""); // Очищаем строку в инпуте
+    setCurrentDate(new Date()); // Возвращаем сетку календаря к текущему месяцу (сентябрь 2026)
   };
 
   return (
@@ -81,8 +85,11 @@ export default function DatePicker(props: DatePickerProps) {
         idInput={idInput}
         label={label}
         isOpen={isOpen}
+        separator={separator}
+        hasClear={hasClear}
         onToggle={() => setIsOpen(!isOpen)}
         onChange={handleInputChange}
+        onClear={handleClear}
       />
 
       {isOpen && (

@@ -42,10 +42,15 @@ export const getCalendarDays = (
   return calendarDays;
 };
 
-export const formatDateString = (day: number | null, month: number, year: number): string => {
+export const formatDateString = (
+  day: number | null,
+  month: number,
+  year: number,
+  separator: string = ".",
+): string => {
   const displayMonth = String(month + 1).padStart(2, "0");
   const displayDay = String(day).padStart(2, "0");
-  return `${displayDay}.${displayMonth}.${year}`;
+  return `${displayDay}${separator}${displayMonth}${separator}${year}`;
 };
 
 export const checkIsToday = (
@@ -62,21 +67,25 @@ export const checkIsToday = (
   );
 };
 
-export const maskAndCleanDateInput = (value: string): string => {
+export const maskAndCleanDateInput = (value: string, separator: string = "."): string => {
   const digits = value.replace(/\D/g, "");
 
   const sliced = digits.slice(0, 8);
 
   if (sliced.length <= 2) return sliced;
-  if (sliced.length <= 4) return `${sliced.slice(0, 2)}.${sliced.slice(2)}`;
-  return `${sliced.slice(0, 2)}.${sliced.slice(2, 4)}.${sliced.slice(4)}`;
+  if (sliced.length <= 4) return `${sliced.slice(0, 2)}${separator}${sliced.slice(2)}`;
+  return `${sliced.slice(0, 2)}.${sliced.slice(2, 4)}${separator}${sliced.slice(4)}`;
 };
 
-export const isValidDate = (dateStr: string): boolean => {
+export const isValidDate = (dateStr: string, separator: string = "."): boolean => {
   if (dateStr.length !== 10) return false;
 
-  const [day, month, year] = dateStr.split(".").map(Number);
+  // Экранируем разделитель для регулярного выражения, если это точка или слэш
+  const escapedSeparator = separator.replace(/[-/\\^$*+?.()|[\]{}]/g, "\\$&");
+  const regex = new RegExp(`^\\d{2}${escapedSeparator}\\d{2}${escapedSeparator}\\d{4}$`);
+  if (!regex.test(dateStr)) return false;
 
+  const [day, month, year] = dateStr.split(separator).map(Number);
   if (month < 1 || month > 12 || year < 1900 || year > 2200) return false;
 
   const checkDate = new Date(year, month - 1, day);
@@ -85,4 +94,12 @@ export const isValidDate = (dateStr: string): boolean => {
     checkDate.getMonth() === month - 1 &&
     checkDate.getDate() === day
   );
+};
+
+export const getPlaceholderTemplate = (value: string, separator: string = "."): string => {
+  const template = `ДД${separator}ММ${separator}ГГГГ`;
+
+  if (!value) return template;
+
+  return value + template.slice(value.length);
 };

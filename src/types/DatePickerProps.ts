@@ -3,6 +3,8 @@ interface DatePickerProps {
   idInput?: string;
   showAdjacentMonths?: boolean;
   label?: string;
+  separator?: string;
+  hasClear?: boolean;
 }
 
 export type { DatePickerProps };

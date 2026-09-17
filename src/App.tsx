@@ -9,6 +9,8 @@ function App() {
         idInput="firstInput"
         showAdjacentMonths={false}
         label="Введите дату презентации"
+        separator="-"
+        hasClear={true}
       />
     </section>
   );
