@@ -61,3 +61,28 @@ export const checkIsToday = (
     currentYear === today.getFullYear()
   );
 };
+
+export const maskAndCleanDateInput = (value: string): string => {
+  const digits = value.replace(/\D/g, "");
+
+  const sliced = digits.slice(0, 8);
+
+  if (sliced.length <= 2) return sliced;
+  if (sliced.length <= 4) return `${sliced.slice(0, 2)}.${sliced.slice(2)}`;
+  return `${sliced.slice(0, 2)}.${sliced.slice(2, 4)}.${sliced.slice(4)}`;
+};
+
+export const isValidDate = (dateStr: string): boolean => {
+  if (dateStr.length !== 10) return false;
+
+  const [day, month, year] = dateStr.split(".").map(Number);
+
+  if (month < 1 || month > 12 || year < 1900 || year > 2200) return false;
+
+  const checkDate = new Date(year, month - 1, day);
+  return (
+    checkDate.getFullYear() === year &&
+    checkDate.getMonth() === month - 1 &&
+    checkDate.getDate() === day
+  );
+};
