@@ -8,7 +8,14 @@ import DatePickerInput from "./components/DatePickerInput";
 import CalendarHeader from "./components/CalendarHeader";
 
 export default function DatePicker(props: DatePickerProps) {
-  const { width, idInput, showAdjacentMonths = true, label, separator = ".", hasClear } = props;
+  const {
+    width,
+    idInput,
+    showAdjacentMonths = true,
+    label,
+    separator = ".",
+    hasClear = false,
+  } = props;
 
   const computedWidth = typeof width === "number" ? `${width}px` : width;
 
@@ -74,8 +81,8 @@ export default function DatePicker(props: DatePickerProps) {
   };
 
   const handleClear = () => {
-    setSelectedDate(""); // Очищаем строку в инпуте
-    setCurrentDate(new Date()); // Возвращаем сетку календаря к текущему месяцу (сентябрь 2026)
+    setSelectedDate("");
+    setCurrentDate(new Date());
   };
 
   return (

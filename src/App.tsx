@@ -5,11 +5,11 @@ function App() {
   return (
     <section id="center">
       <DatePicker
-        width={600}
+        width={300}
         idInput="firstInput"
         showAdjacentMonths={false}
         label="Введите дату презентации"
-        separator="-"
+        separator="."
         hasClear={true}
       />
     </section>
