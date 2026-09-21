@@ -1,27 +1,42 @@
-import { useCallback, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import s from "./DatePicker.module.css";
 import type { DatePickerProps } from "./types/DatePickerProps";
 import DayCell from "./components/DayCell";
 import WeekDaysTr from "./components/WeekDaysTr";
-import { getCalendarDays, isValidDate, maskAndCleanDateInput } from "./utils/dateUtils";
+import {
+  formatDateString,
+  getCalendarDays,
+  isValidDate,
+  maskAndCleanDateInput,
+} from "./utils/dateUtils";
 import DatePickerInput from "./components/DatePickerInput";
 import CalendarHeader from "./components/CalendarHeader";
+import clsx from "clsx";
 
 export default function DatePicker(props: DatePickerProps) {
-  const {
-    width,
-    idInput,
-    showAdjacentMonths = true,
-    label,
-    separator = ".",
-    hasClear = false,
-  } = props;
+  const { width, showAdjacentMonths = true, label, separator = ".", hasClear = false } = props;
 
   const computedWidth = typeof width === "number" ? `${width}px` : width;
 
   const [isOpen, setIsOpen] = useState(false);
   const [selectedDate, setSelectedDate] = useState("");
   const [currentDate, setCurrentDate] = useState(new Date());
+  const [error, setError] = useState<string | null>(null);
+
+  useEffect(() => {
+    if (!isOpen) return;
+
+    const handleKeyDown = (event: KeyboardEvent) => {
+      if (event.key === "Escape") {
+        setIsOpen(false);
+      }
+    };
+    document.addEventListener("keydown", handleKeyDown);
+
+    return () => {
+      document.removeEventListener("keydown", handleKeyDown);
+    };
+  }, [isOpen]);
 
   const year = currentDate.getFullYear();
   const month = currentDate.getMonth();
@@ -54,46 +69,47 @@ export default function DatePicker(props: DatePickerProps) {
   }, []);
 
   const handleDayClick = (day: number) => {
-    const displayMonth = String(month + 1).padStart(2, "0");
-    const displayDay = String(day).padStart(2, "0");
-    const formattedDate = `${displayDay}${separator}${displayMonth}${separator}${year}`;
-
-    setSelectedDate(formattedDate);
+    setSelectedDate(formatDateString(day, month, year, separator));
+    setError(null);
     // setIsOpen(false);
   };
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const rawValue = e.target.value;
-
-    // 1. Применяем маску (пользователь пишет "1509", маска сама делает "15.09")
     const maskedValue = maskAndCleanDateInput(rawValue, separator);
-
-    // 2. Всегда обновляем текст в инпуте, чтобы пользователь видел, что он пишет
     setSelectedDate(maskedValue);
-
-    // 3. Если дата дописана до конца и она валидна — синхронизируем сетку календаря!
-    if (isValidDate(maskedValue, separator)) {
-      const [, monthStr, yearStr] = maskedValue.split(separator).map(Number);
-
-      // Перелистываем календарь на этот месяц и год, ставя фокус на 1 число
-      setCurrentDate(new Date(yearStr, monthStr - 1, 1));
+    if (maskedValue.length === 0) {
+      setError(null);
+      return;
+    }
+    if (maskedValue.length === 10) {
+      if (isValidDate(maskedValue, separator)) {
+        setError(null); // Всё ок!
+        const [, monthStr, yearStr] = maskedValue.split(separator).map(Number);
+        setCurrentDate(new Date(yearStr, monthStr - 1, 1));
+      } else {
+        setError("Неверный формат даты"); // Нашли ошибку!
+      }
+    } else {
+      setError(null);
     }
   };
 
   const handleClear = () => {
     setSelectedDate("");
     setCurrentDate(new Date());
+    setError(null);
   };
 
   return (
     <div className={s.datePickerContainer} style={{ width: computedWidth }}>
       <DatePickerInput
         selectedDate={selectedDate}
-        idInput={idInput}
         label={label}
         isOpen={isOpen}
         separator={separator}
         hasClear={hasClear}
+        inputError={error}
         onToggle={() => setIsOpen(!isOpen)}
         onChange={handleInputChange}
         onClear={handleClear}
@@ -103,7 +119,11 @@ export default function DatePicker(props: DatePickerProps) {
         <>
           <div className={s.datePickerOverlay} onClick={() => setIsOpen(false)} />
 
-          <div className={s.datePickerModal}>
+          <div
+            className={clsx(s.datePickerModal, {
+              [s.calendarShifted]: error,
+            })}
+          >
             <CalendarHeader
               monthNow={monthNow}
               onPrevMonth={handlePrevMonth}

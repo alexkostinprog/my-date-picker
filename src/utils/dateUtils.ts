@@ -74,7 +74,7 @@ export const maskAndCleanDateInput = (value: string, separator: string = "."): s
 
   if (sliced.length <= 2) return sliced;
   if (sliced.length <= 4) return `${sliced.slice(0, 2)}${separator}${sliced.slice(2)}`;
-  return `${sliced.slice(0, 2)}.${sliced.slice(2, 4)}${separator}${sliced.slice(4)}`;
+  return `${sliced.slice(0, 2)}${separator}${sliced.slice(2, 4)}${separator}${sliced.slice(4)}`;
 };
 
 export const isValidDate = (dateStr: string, separator: string = "."): boolean => {

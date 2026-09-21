@@ -113,3 +113,16 @@
 .clearButton:hover {
   transform: scale(1.1);
 }
+
+.errorMessage {
+  position: absolute;
+  left: 4px;
+  top: 48px;
+  color: #ef4444;
+  font-size: 12px;
+  line-height: 1;
+}
+
+.inputError {
+  border-color: #ef4444 !important;
+}

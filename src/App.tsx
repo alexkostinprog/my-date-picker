@@ -4,14 +4,7 @@ import DatePicker from "./DatePicker";
 function App() {
   return (
     <section id="center">
-      <DatePicker
-        width={300}
-        idInput="firstInput"
-        showAdjacentMonths={false}
-        label="Введите дату презентации"
-        separator="."
-        hasClear={true}
-      />
+      <DatePicker width={300} label="Введите дату презентации" />
     </section>
   );
 }

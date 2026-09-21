@@ -3,14 +3,26 @@ import s from "./DatePickerInput.module.scss";
 import type { DatePickerInputProps } from "./DatePickerInputProps";
 import { getPlaceholderTemplate } from "../utils/dateUtils";
 import { X } from "lucide-react";
+import { useInputId } from "../hooks/useInputId";
 
 export default function DatePickerInput(props: DatePickerInputProps) {
-  const { selectedDate, isOpen, idInput, label, separator, hasClear, onToggle, onChange, onClear } =
-    props;
+  const {
+    selectedDate,
+    isOpen,
+    label,
+    separator,
+    hasClear,
+    inputError,
+    onToggle,
+    onChange,
+    onClear,
+  } = props;
   const isFilled = selectedDate.length > 0;
 
   // Получаем строку шаблона (например, "12.ММ.ГГГГ")
   const placeholderTemplate = getPlaceholderTemplate(selectedDate, separator);
+
+  const inputId = useInputId();
 
   return (
     <div className={s.inputWrapper}>
@@ -18,21 +30,24 @@ export default function DatePickerInput(props: DatePickerInputProps) {
         className={clsx(s.datePickerInput, {
           [s.active]: isOpen,
           [s.hasValue]: isFilled,
+          [s.inputError]: inputError,
         })}
         type="text"
         placeholder=""
-        id={idInput}
+        id={inputId}
         value={selectedDate}
         onChange={onChange}
         onClick={onToggle}
       />
+
+      {inputError && <div className={s.errorMessage}>{inputError}</div>}
 
       {(isOpen || (selectedDate.length > 0 && selectedDate.length < 10)) && (
         <span className={s.inputMaskHint}>{placeholderTemplate}</span>
       )}
 
       <label
-        htmlFor={idInput}
+        htmlFor={inputId}
         className={clsx(s.floatingLabel, {
           [s.active]: isOpen,
           [s.hasValue]: isFilled,
