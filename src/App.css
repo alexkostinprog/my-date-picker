@@ -11,3 +11,7 @@
     gap: 18px;
   }
 }
+
+.oneRow {
+  display: inline-block;
+}

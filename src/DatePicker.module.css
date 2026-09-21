@@ -3,6 +3,7 @@
   display: inline-block;
   font-family: Arial, sans-serif;
   min-width: 180px;
+  margin-left: 8px;
 }
 
 .datePickerModal {
@@ -23,16 +24,6 @@
 
 .calendarShifted {
   top: 64px;
-}
-
-.datePickerOverlay {
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100vw;
-  height: 100vh;
-  z-index: 99;
-  background: transparent;
 }
 
 .calendarGrid {

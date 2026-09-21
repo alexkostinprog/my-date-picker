@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import s from "./DatePicker.module.css";
 import type { DatePickerProps } from "./types/DatePickerProps";
 import DayCell from "./components/DayCell";
@@ -23,6 +23,8 @@ export default function DatePicker(props: DatePickerProps) {
   const [currentDate, setCurrentDate] = useState(new Date());
   const [error, setError] = useState<string | null>(null);
 
+  const containerRef = useRef<HTMLDivElement>(null);
+
   useEffect(() => {
     if (!isOpen) return;
 
@@ -31,10 +33,17 @@ export default function DatePicker(props: DatePickerProps) {
         setIsOpen(false);
       }
     };
+    const handleClickOutside = (event: MouseEvent) => {
+      if (containerRef.current && !containerRef.current.contains(event.target as Node)) {
+        setIsOpen(false);
+      }
+    };
     document.addEventListener("keydown", handleKeyDown);
+    document.addEventListener("mousedown", handleClickOutside);
 
     return () => {
       document.removeEventListener("keydown", handleKeyDown);
+      document.removeEventListener("mousedown", handleClickOutside);
     };
   }, [isOpen]);
 
@@ -102,7 +111,7 @@ export default function DatePicker(props: DatePickerProps) {
   };
 
   return (
-    <div className={s.datePickerContainer} style={{ width: computedWidth }}>
+    <div ref={containerRef} className={s.datePickerContainer} style={{ width: computedWidth }}>
       <DatePickerInput
         selectedDate={selectedDate}
         label={label}
@@ -116,36 +125,32 @@ export default function DatePicker(props: DatePickerProps) {
       />
 
       {isOpen && (
-        <>
-          <div className={s.datePickerOverlay} onClick={() => setIsOpen(false)} />
+        <div
+          className={clsx(s.datePickerModal, {
+            [s.calendarShifted]: error,
+          })}
+        >
+          <CalendarHeader
+            monthNow={monthNow}
+            onPrevMonth={handlePrevMonth}
+            onNextMonth={handleNextMonth}
+          />
 
-          <div
-            className={clsx(s.datePickerModal, {
-              [s.calendarShifted]: error,
-            })}
-          >
-            <CalendarHeader
-              monthNow={monthNow}
-              onPrevMonth={handlePrevMonth}
-              onNextMonth={handleNextMonth}
-            />
+          <div className={s.calendarGrid}>
+            <WeekDaysTr />
 
-            <div className={s.calendarGrid}>
-              <WeekDaysTr />
-
-              {calendarDays.map((item, index) => (
-                <DayCell
-                  key={index}
-                  item={item}
-                  month={month}
-                  year={year}
-                  selectedDate={selectedDate}
-                  onDayClick={handleDayClick}
-                />
-              ))}
-            </div>
+            {calendarDays.map((item, index) => (
+              <DayCell
+                key={index}
+                item={item}
+                month={month}
+                year={year}
+                selectedDate={selectedDate}
+                onDayClick={handleDayClick}
+              />
+            ))}
           </div>
-        </>
+        </div>
       )}
     </div>
   );
