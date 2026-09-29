@@ -40,7 +40,9 @@ export default function DatePickerInput(props: DatePickerInputProps) {
         onClick={onToggle}
       />
 
-      {inputError && <div className={s.errorMessage}>{inputError}</div>}
+      {inputError && selectedDate.length === 10 && (
+        <div className={s.errorMessage}>{inputError}</div>
+      )}
 
       {(isOpen || (selectedDate.length > 0 && selectedDate.length < 10)) && (
         <span className={s.inputMaskHint}>{placeholderTemplate}</span>

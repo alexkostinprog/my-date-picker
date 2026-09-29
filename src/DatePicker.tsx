@@ -14,14 +14,26 @@ import CalendarHeader from "./components/CalendarHeader";
 import clsx from "clsx";
 
 export default function DatePicker(props: DatePickerProps) {
-  const { width, showAdjacentMonths = true, label, separator = ".", hasClear = false } = props;
+  const {
+    width,
+    showAdjacentMonths = true,
+    label,
+    separator = ".",
+    hasClear = false,
+    error,
+    value: externalValue,
+    onChangeValue,
+  } = props;
 
   const computedWidth = typeof width === "number" ? `${width}px` : width;
 
+  const [localDate, setLocalDate] = useState("");
+
+  const isControlled = externalValue !== undefined;
+  const currentSelectedDate = isControlled ? externalValue : localDate;
+
   const [isOpen, setIsOpen] = useState(false);
-  const [selectedDate, setSelectedDate] = useState("");
   const [currentDate, setCurrentDate] = useState(new Date());
-  const [error, setError] = useState<string | null>(null);
 
   const containerRef = useRef<HTMLDivElement>(null);
 
@@ -49,6 +61,16 @@ export default function DatePicker(props: DatePickerProps) {
 
   const year = currentDate.getFullYear();
   const month = currentDate.getMonth();
+
+  const updateDate = (nextValue: string) => {
+    if (isControlled) {
+      // Если управляется формой — отправляем значение наверх в React Hook Form
+      onChangeValue?.(nextValue);
+    } else {
+      // Если работает сам по себе — обновляем локальный стейт
+      setLocalDate(nextValue);
+    }
+  };
 
   const currentMonthYear = currentDate.toLocaleString("ru-RU", {
     month: "long",
@@ -78,42 +100,36 @@ export default function DatePicker(props: DatePickerProps) {
   }, []);
 
   const handleDayClick = (day: number) => {
-    setSelectedDate(formatDateString(day, month, year, separator));
-    setError(null);
+    const formatted = formatDateString(day, month, year, separator);
+    updateDate(formatted);
     // setIsOpen(false);
   };
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const rawValue = e.target.value;
     const maskedValue = maskAndCleanDateInput(rawValue, separator);
-    setSelectedDate(maskedValue);
+    updateDate(maskedValue);
+
     if (maskedValue.length === 0) {
-      setError(null);
       return;
     }
     if (maskedValue.length === 10) {
       if (isValidDate(maskedValue, separator)) {
-        setError(null); // Всё ок!
         const [, monthStr, yearStr] = maskedValue.split(separator).map(Number);
         setCurrentDate(new Date(yearStr, monthStr - 1, 1));
-      } else {
-        setError("Неверный формат даты"); // Нашли ошибку!
       }
-    } else {
-      setError(null);
     }
   };
 
   const handleClear = () => {
-    setSelectedDate("");
+    updateDate("");
     setCurrentDate(new Date());
-    setError(null);
   };
 
   return (
     <div ref={containerRef} className={s.datePickerContainer} style={{ width: computedWidth }}>
       <DatePickerInput
-        selectedDate={selectedDate}
+        selectedDate={currentSelectedDate}
         label={label}
         isOpen={isOpen}
         separator={separator}
@@ -123,11 +139,10 @@ export default function DatePicker(props: DatePickerProps) {
         onChange={handleInputChange}
         onClear={handleClear}
       />
-
       {isOpen && (
         <div
           className={clsx(s.datePickerModal, {
-            [s.calendarShifted]: error,
+            [s.calendarShifted]: error && currentSelectedDate.length === 10,
           })}
         >
           <CalendarHeader
@@ -145,7 +160,7 @@ export default function DatePicker(props: DatePickerProps) {
                 item={item}
                 month={month}
                 year={year}
-                selectedDate={selectedDate}
+                selectedDate={currentSelectedDate}
                 onDayClick={handleDayClick}
               />
             ))}

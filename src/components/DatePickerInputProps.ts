@@ -4,7 +4,7 @@ interface DatePickerInputProps {
   label?: string;
   separator: string;
   hasClear: boolean;
-  inputError: string | null;
+  inputError?: string;
   onToggle: () => void;
   onChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
   onClear: () => void;

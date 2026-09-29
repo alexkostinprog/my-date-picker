@@ -4,6 +4,9 @@ interface DatePickerProps {
   label?: string;
   separator?: string;
   hasClear?: boolean;
+  value?: string;
+  error?: string;
+  onChangeValue?: (value: string) => void;
 }
 
 export type { DatePickerProps };
